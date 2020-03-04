@@ -1,0 +1,2 @@
+rootProject.name='A Game of Battleships'
+include ':app'
