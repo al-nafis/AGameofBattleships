@@ -1,15 +1,17 @@
 package com.mnafis.agameofbattleships.menu
 
-import android.util.Log
 import android.view.View
 import androidx.databinding.ObservableField
 import androidx.lifecycle.ViewModel
 import com.mnafis.agameofbattleships.R
 import com.mnafis.agameofbattleships.utilities.EventBus
 import com.mnafis.agameofbattleships.utilities.SharedPrefUtil
+import com.mnafis.agameofbattleships.utilities.SharedPrefUtil.Companion.DEFAULT_VALUE
 import com.mnafis.agameofbattleships.utilities.SharedPrefUtil.Companion.MUSIC_STATUS
 import com.mnafis.agameofbattleships.utilities.SharedPrefUtil.Companion.SOUND_STATUS
 import com.mnafis.agameofbattleships.utilities.TheMediaPlayer
+import com.mnafis.agameofbattleships.utilities.TheMediaPlayer.Companion.OFF
+import com.mnafis.agameofbattleships.utilities.TheMediaPlayer.Companion.ON
 import javax.inject.Inject
 
 class MenuViewModel @Inject constructor(
@@ -20,8 +22,8 @@ class MenuViewModel @Inject constructor(
 
     val backButtonText = "<-"
 
-    val musicText = ObservableField<String>("On")
-    val soundText = ObservableField<String>("On")
+    val musicText = ObservableField<String>(ON)
+    val soundText = ObservableField<String>(ON)
     val menuWelcomeActive = ObservableField<Boolean>(true)
     val menuMainActive = ObservableField<Boolean>(false)
     val menuGameDifficultyActive = ObservableField<Boolean>(false)
@@ -29,9 +31,8 @@ class MenuViewModel @Inject constructor(
     val menuCreditsActive = ObservableField<Boolean>(false)
 
     fun onResume() {
-        Log.d("AWESOME", "JOB")
-        sharedPrefUtil.getBoolean(MUSIC_STATUS)?.let { musicText.set(if (it) "On" else "Off") }
-        sharedPrefUtil.getBoolean(SOUND_STATUS)?.let { soundText.set(if (it) "On" else "Off") }
+        if (sharedPrefUtil.getString(MUSIC_STATUS) != DEFAULT_VALUE) musicText.set(sharedPrefUtil.getString(MUSIC_STATUS))
+        if (sharedPrefUtil.getString(SOUND_STATUS) != DEFAULT_VALUE) soundText.set(sharedPrefUtil.getString(SOUND_STATUS))
     }
 
     fun onClickMenuButton(view: View) {
@@ -61,32 +62,28 @@ class MenuViewModel @Inject constructor(
     }
 
     private fun setGameDifficultyAndBegin(gameDifficulty: String) {
-        menuGameDifficultyActive.set(true) //for Testing
+        //todo: needs to be implemented
     }
 
     private fun updateMusicStatus() {
-        if (musicText.get() == "On") {
-            musicText.set("Off")
-            theMediaPlayer.musicStatus = false
+        if (musicText.get() == ON) {
+            musicText.set(OFF)
+            theMediaPlayer.updateMusicStatus(OFF)
             theMediaPlayer.stopMusic()
-            sharedPrefUtil.setBoolean(MUSIC_STATUS, false)
         } else {
-            musicText.set("On")
-            theMediaPlayer.musicStatus = true
+            musicText.set(ON)
+            theMediaPlayer.updateMusicStatus(ON)
             theMediaPlayer.playMusic()
-            sharedPrefUtil.setBoolean(MUSIC_STATUS, true)
         }
     }
 
     private fun updateSoundStatus() {
-        if (soundText.get() == "On") {
-            soundText.set("Off")
-            theMediaPlayer.soundStatus = false
-            sharedPrefUtil.setBoolean(SOUND_STATUS, false)
+        if (soundText.get() == ON) {
+            soundText.set(OFF)
+            theMediaPlayer.updateSoundStatus(OFF)
         } else {
-            soundText.set("On")
-            theMediaPlayer.soundStatus = true
-            sharedPrefUtil.setBoolean(SOUND_STATUS, true)
+            soundText.set(ON)
+            theMediaPlayer.updateSoundStatus(ON)
         }
     }
 

@@ -10,9 +10,12 @@ class MainViewModel @Inject constructor(
     private val theMediaPlayer: TheMediaPlayer
 ) : ViewModel() {
 
+    fun onCreate() {
+        theMediaPlayer.updateMusicStatus(sharedPrefUtil.getString(SharedPrefUtil.MUSIC_STATUS))
+        theMediaPlayer.updateSoundStatus(sharedPrefUtil.getString(SharedPrefUtil.SOUND_STATUS))
+    }
+
     fun onResume() {
-        sharedPrefUtil.getBoolean(SharedPrefUtil.MUSIC_STATUS)?.let { theMediaPlayer.musicStatus = it }
-        sharedPrefUtil.getBoolean(SharedPrefUtil.SOUND_STATUS)?.let { theMediaPlayer.soundStatus = it }
         theMediaPlayer.playMusic()
     }
 
