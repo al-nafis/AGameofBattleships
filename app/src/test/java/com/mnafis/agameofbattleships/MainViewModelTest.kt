@@ -6,8 +6,6 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import org.junit.Before
-
-import org.junit.Assert.*
 import org.junit.Test
 
 class MainViewModelTest {
@@ -20,6 +18,19 @@ class MainViewModelTest {
     @Before
     fun setUp() {
         subject = MainViewModel(sharedPrefUtil, theMediaPlayer)
+    }
+
+    @Test
+    fun onCreate_updatesMusicAndSoundStatus() {
+        every { sharedPrefUtil.getString(SharedPrefUtil.SOUND_STATUS) } returns "On"
+        every { sharedPrefUtil.getString(SharedPrefUtil.MUSIC_STATUS) } returns "On"
+
+        subject.onCreate()
+
+        verify {
+            theMediaPlayer.updateMusicStatus("On")
+            theMediaPlayer.updateSoundStatus("On")
+        }
     }
 
     @Test

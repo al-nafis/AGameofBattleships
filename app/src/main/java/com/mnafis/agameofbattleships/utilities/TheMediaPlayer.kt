@@ -1,30 +1,47 @@
 package com.mnafis.agameofbattleships.utilities
 
-import android.content.Context
 import android.media.MediaPlayer
-import com.mnafis.agameofbattleships.R
+import androidx.annotation.StringDef
+import com.mnafis.agameofbattleships.utilities.SharedPrefUtil.Companion.DEFAULT_VALUE
+import com.mnafis.agameofbattleships.utilities.SharedPrefUtil.Companion.MUSIC_STATUS
+import com.mnafis.agameofbattleships.utilities.SharedPrefUtil.Companion.SOUND_STATUS
 import javax.inject.Inject
 import javax.inject.Named
 import javax.inject.Singleton
 
 @Singleton
-class TheMediaPlayer @Inject constructor(@Named("ApplicationContext") private val context: Context, private val sharedPrefUtil: SharedPrefUtil) {
-    private val MAIN_MENU_MUSIC: Int = R.raw.main_menu
-    private val mediaPlayer: MediaPlayer
+class TheMediaPlayer @Inject constructor(
+    private val sharedPrefUtil: SharedPrefUtil,
+    @Named("BackgroundMusic") private val mediaPlayer: MediaPlayer,
+    @Named("AttackSound") private val soundPlayer: MediaPlayer
+) {
 
-    var soundStatus = true
-    var musicStatus = true
+    private var soundStatus = ON
+    private var musicStatus = ON
+
+    fun updateSoundStatus(status: String) {
+        if (status != DEFAULT_VALUE) {
+            soundStatus = status
+            sharedPrefUtil.setString(SOUND_STATUS, status)
+        }
+    }
+
+    fun updateMusicStatus(@StatusKey status: String) {
+        if (status != DEFAULT_VALUE) {
+            musicStatus = status
+            sharedPrefUtil.setString(MUSIC_STATUS, status)
+        }
+    }
 
     fun playHitMusic() {
-        if (soundStatus) {
-            val soundPlayer = MediaPlayer.create(context, R.raw.shotgun)
+        if (soundStatus == ON) {
             soundPlayer.setVolume(0.15f, 0.15f)
             soundPlayer.start()
         }
     }
 
     fun pauseMusic() {
-        if(musicStatus) mediaPlayer.pause()
+        if (musicStatus == ON) mediaPlayer.pause()
     }
 
     fun stopMusic() {
@@ -33,10 +50,15 @@ class TheMediaPlayer @Inject constructor(@Named("ApplicationContext") private va
     }
 
     fun playMusic() {
-        if (musicStatus) mediaPlayer.start()
+        if (musicStatus == ON) mediaPlayer.start()
     }
 
-    init {
-        mediaPlayer = MediaPlayer.create(context, MAIN_MENU_MUSIC)
+    @Retention(AnnotationRetention.SOURCE)
+    @StringDef(ON, OFF)
+    annotation class StatusKey
+
+    companion object{
+        const val ON = "On"
+        const val OFF = "Off"
     }
 }

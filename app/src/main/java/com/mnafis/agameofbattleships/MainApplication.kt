@@ -31,18 +31,6 @@ class MainApplication : Application(), HasActivityInjector, HasSupportFragmentIn
         super.onCreate()
         DaggerMainApplicationComponent.builder().contextModule(ContextModule(this)).build()
             .inject(this)
-
-        sharedPrefUtil.getBoolean(SharedPrefUtil.MUSIC_STATUS)?.let {
-            theMediaPlayer.musicStatus = it
-        } ?.run {
-            theMediaPlayer.musicStatus = true
-        }
-
-        sharedPrefUtil.getBoolean(SharedPrefUtil.SOUND_STATUS)?.let {
-            theMediaPlayer.soundStatus = it
-        } ?.run {
-            theMediaPlayer.soundStatus = true
-        }
     }
 
     override fun activityInjector(): DispatchingAndroidInjector<Activity> = activityInjector
