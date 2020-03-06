@@ -1,5 +1,6 @@
 package com.mnafis.agameofbattleships
 
+import com.mnafis.agameofbattleships.utilities.AudioStatus.ON
 import com.mnafis.agameofbattleships.utilities.SharedPrefUtil
 import com.mnafis.agameofbattleships.utilities.TheMediaPlayer
 import io.mockk.every
@@ -22,14 +23,14 @@ class MainViewModelTest {
 
     @Test
     fun onCreate_updatesMusicAndSoundStatus() {
-        every { sharedPrefUtil.getString(SharedPrefUtil.SOUND_STATUS) } returns "On"
-        every { sharedPrefUtil.getString(SharedPrefUtil.MUSIC_STATUS) } returns "On"
+        every { sharedPrefUtil.getMusicStatus() } returns ON
+        every { sharedPrefUtil.getSoundStatus() } returns ON
 
         subject.onCreate()
 
         verify {
-            theMediaPlayer.updateMusicStatus("On")
-            theMediaPlayer.updateSoundStatus("On")
+            theMediaPlayer.updateMusicStatus(ON)
+            theMediaPlayer.updateSoundStatus(ON)
         }
     }
 

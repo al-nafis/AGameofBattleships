@@ -1,9 +1,9 @@
 package com.mnafis.agameofbattleships.utilities
 
 import android.media.MediaPlayer
-import com.mnafis.agameofbattleships.utilities.SharedPrefUtil.Companion.DEFAULT_VALUE
-import com.mnafis.agameofbattleships.utilities.SharedPrefUtil.Companion.MUSIC_STATUS
-import com.mnafis.agameofbattleships.utilities.SharedPrefUtil.Companion.SOUND_STATUS
+import com.mnafis.agameofbattleships.utilities.AudioStatus.OFF
+import com.mnafis.agameofbattleships.utilities.AudioStatus.ON
+import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import org.junit.Before
@@ -23,31 +23,21 @@ class TheMediaPlayerTest {
     }
 
     @Test
-    fun updateSoundStatus_doesNotContainDefaultValue_updatesSoundStatusValueAndSharedPref() {
-        subject.updateSoundStatus("Off")
+    fun updateSoundStatus_updatesSoundStatusAndSharedPref() {
+        subject.updateSoundStatus(OFF)
+        subject.playMenuSelectionEffect()
 
-        verify { sharedPrefUtil.setString(SOUND_STATUS, "Off") }
+        verify { sharedPrefUtil.setSoundStatus(OFF) }
+        verify (exactly = 0) { soundPlayer.start() }
     }
 
     @Test
-    fun updateSoundStatus_containsDefaultValue_doesNothing() {
-        subject.updateSoundStatus(DEFAULT_VALUE)
+    fun updateMusicStatus_updatesMusicStatusValueAndSharedPref() {
+        subject.updateMusicStatus(OFF)
+        subject.playMusic()
 
-        verify (exactly = 0) { sharedPrefUtil.setString(any(), any()) }
-    }
-
-    @Test
-    fun updateMusicStatus_doesNotContainDefaultValue_updatesMusicStatusValueAndSharedPref() {
-        subject.updateMusicStatus("Off")
-
-        verify { sharedPrefUtil.setString(MUSIC_STATUS, "Off") }
-    }
-
-    @Test
-    fun updateMusicStatus_containsDefaultValue_doesNothing() {
-        subject.updateMusicStatus(DEFAULT_VALUE)
-
-        verify (exactly = 0) { sharedPrefUtil.setString(any(), any()) }
+        verify { sharedPrefUtil.setMusicStatus(OFF) }
+        verify (exactly = 0) { mediaPlayer.start() }
     }
 
     @Test
@@ -55,14 +45,14 @@ class TheMediaPlayerTest {
         subject.playMenuSelectionEffect()
 
         verify {
-            soundPlayer.setVolume(0.15f, 0.15f)
+            soundPlayer.setVolume(0.10f, 0.10f)
             soundPlayer.start()
         }
     }
 
     @Test
     fun playMenuSelectionEffect_soundStatusFalse_DoesNothing() {
-        subject.updateSoundStatus("Off")
+        subject.updateSoundStatus(OFF)
 
         subject.playMenuSelectionEffect()
 
@@ -81,7 +71,7 @@ class TheMediaPlayerTest {
 
     @Test
     fun pauseMusic_musicStatusFalse_doesNothing() {
-        subject.updateMusicStatus("Off")
+        subject.updateMusicStatus(OFF)
 
         subject.pauseMusic()
 
@@ -89,7 +79,9 @@ class TheMediaPlayerTest {
     }
 
     @Test
-    fun stopMusic_stopsMusicAndPrepares() {
+    fun stopMusic_musicPlaying_stopsMusicAndPrepares() {
+        every { mediaPlayer.isPlaying } returns true
+
         subject.stopMusic()
 
         verify {
@@ -99,8 +91,20 @@ class TheMediaPlayerTest {
     }
 
     @Test
+    fun stopMusic_musicNotPlaying_doesNothing() {
+        every { mediaPlayer.isPlaying } returns false
+
+        subject.stopMusic()
+
+        verify (exactly = 0) {
+            mediaPlayer.stop()
+            mediaPlayer.prepare()
+        }
+    }
+
+    @Test
     fun playMusic_musicStatusTrue_startsMusic() {
-        subject.updateMusicStatus("On")
+        subject.updateMusicStatus(ON)
 
         subject.playMusic()
 
@@ -109,7 +113,7 @@ class TheMediaPlayerTest {
 
     @Test
     fun playMusic_musicStatusFalse_doesNothing() {
-        subject.updateMusicStatus("Off")
+        subject.updateMusicStatus(OFF)
 
         subject.playMusic()
 

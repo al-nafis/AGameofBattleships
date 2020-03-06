@@ -2,14 +2,11 @@ package com.mnafis.agameofbattleships.menu
 
 import android.view.View
 import com.mnafis.agameofbattleships.R
+import com.mnafis.agameofbattleships.utilities.AudioStatus.OFF
+import com.mnafis.agameofbattleships.utilities.AudioStatus.ON
 import com.mnafis.agameofbattleships.utilities.EventBus
 import com.mnafis.agameofbattleships.utilities.SharedPrefUtil
-import com.mnafis.agameofbattleships.utilities.SharedPrefUtil.Companion.DEFAULT_VALUE
-import com.mnafis.agameofbattleships.utilities.SharedPrefUtil.Companion.MUSIC_STATUS
-import com.mnafis.agameofbattleships.utilities.SharedPrefUtil.Companion.SOUND_STATUS
 import com.mnafis.agameofbattleships.utilities.TheMediaPlayer
-import com.mnafis.agameofbattleships.utilities.TheMediaPlayer.Companion.OFF
-import com.mnafis.agameofbattleships.utilities.TheMediaPlayer.Companion.ON
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
@@ -18,6 +15,9 @@ import org.junit.Before
 import org.junit.Test
 
 class MenuViewModelTest {
+
+    private val AUDIO_ON_TEXT = "On"
+    private val AUDIO_OFF_TEXT = "Off"
 
     private val view: View = mockk(relaxed = true)
     private val eventBus: EventBus = mockk(relaxed = true)
@@ -32,43 +32,43 @@ class MenuViewModelTest {
     }
 
     @Test
-    fun onResume_musicStatusDefaultValue_doesNothing() {
-        every { sharedPrefUtil.getString(MUSIC_STATUS) } returns DEFAULT_VALUE
-        subject.musicText.set(ON)
+    fun onResume_sharedPrefMusicStatusOn_updatesObservableFieldToOn() {
+        every { sharedPrefUtil.getMusicStatus() } returns ON
+        subject.musicText.set(AUDIO_OFF_TEXT)
 
         subject.onResume()
 
-        assertEquals(ON, subject.musicText.get())
+        assertEquals(AUDIO_ON_TEXT, subject.musicText.get())
     }
 
     @Test
-    fun onResume_musicStatusNotDefaultValue_setsMusicDisplayString() {
-        every { sharedPrefUtil.getString(MUSIC_STATUS) } returns OFF
-        subject.musicText.set(ON)
+    fun onResume_sharedPrefMusicStatusOff_updatesObservableFieldToOff() {
+        every { sharedPrefUtil.getMusicStatus() } returns OFF
+        subject.musicText.set(AUDIO_ON_TEXT)
 
         subject.onResume()
 
-        assertEquals(OFF, subject.musicText.get())
+        assertEquals(AUDIO_OFF_TEXT, subject.musicText.get())
     }
 
     @Test
-    fun onResume_soundStatusDefaultValue_doesNothing() {
-        every { sharedPrefUtil.getString(SOUND_STATUS) } returns DEFAULT_VALUE
-        subject.soundText.set(ON)
+    fun onResume_sharedPrefSoundStatusOn_updatesObservableFieldToOn() {
+        every { sharedPrefUtil.getSoundStatus() } returns ON
+        subject.soundText.set(AUDIO_OFF_TEXT)
 
         subject.onResume()
 
-        assertEquals(ON, subject.soundText.get())
+        assertEquals(AUDIO_ON_TEXT, subject.soundText.get())
     }
 
     @Test
-    fun onResume_soundStatusNotDefaultValue_setsSoundDisplayString() {
-        every { sharedPrefUtil.getString(SOUND_STATUS) } returns OFF
-        subject.soundText.set(ON)
+    fun onResume_sharedPrefSoundStatusOff_updatesObservableFieldToOff() {
+        every { sharedPrefUtil.getSoundStatus() } returns OFF
+        subject.soundText.set(AUDIO_ON_TEXT)
 
         subject.onResume()
 
-        assertEquals(OFF, subject.soundText.get())
+        assertEquals(AUDIO_OFF_TEXT, subject.soundText.get())
     }
 
     @Test
@@ -202,12 +202,15 @@ class MenuViewModelTest {
     @Test
     fun onClickMenuButton_musicSettingsButtonClickedAndMusicWasOff_updatesTextAndPlaysMusic() {
         every { view.id } returns R.id.music_settings_button
-        subject.musicText.set(OFF)
+        subject.musicText.set(AUDIO_OFF_TEXT)
 
         subject.onClickMenuButton(view)
 
-        verify { theMediaPlayer.playMusic() }
-        assertEquals(ON, subject.musicText.get())
+        verify {
+            theMediaPlayer.playMusic()
+            theMediaPlayer.updateMusicStatus(ON)
+        }
+        assertEquals(AUDIO_ON_TEXT, subject.musicText.get())
         assertFalse(subject.menuMainActive.get()!!)
         assertFalse(subject.menuWelcomeActive.get()!!)
         assertFalse(subject.menuGameDifficultyActive.get()!!)
@@ -218,12 +221,15 @@ class MenuViewModelTest {
     @Test
     fun onClickMenuButton_musicSettingsButtonClickedAndMusicWasOn_updatesTextAndStopsMusic() {
         every { view.id } returns R.id.music_settings_button
-        subject.musicText.set(ON)
+        subject.musicText.set(AUDIO_ON_TEXT)
 
         subject.onClickMenuButton(view)
 
-        verify { theMediaPlayer.stopMusic() }
-        assertEquals(OFF, subject.musicText.get())
+        verify {
+            theMediaPlayer.stopMusic()
+            theMediaPlayer.updateMusicStatus(OFF)
+        }
+        assertEquals(AUDIO_OFF_TEXT, subject.musicText.get())
         assertFalse(subject.menuMainActive.get()!!)
         assertFalse(subject.menuWelcomeActive.get()!!)
         assertFalse(subject.menuGameDifficultyActive.get()!!)
@@ -234,12 +240,12 @@ class MenuViewModelTest {
     @Test
     fun onClickMenuButton_soundSettingsButtonClickedAndSoundWasOff_updatesTextAndTheMediaPlayer() {
         every { view.id } returns R.id.sound_settings_button
-        subject.soundText.set(OFF)
+        subject.soundText.set(AUDIO_OFF_TEXT)
 
         subject.onClickMenuButton(view)
 
         verify { theMediaPlayer.updateSoundStatus(ON) }
-        assertEquals(ON, subject.soundText.get())
+        assertEquals(AUDIO_ON_TEXT, subject.soundText.get())
         assertFalse(subject.menuMainActive.get()!!)
         assertFalse(subject.menuWelcomeActive.get()!!)
         assertFalse(subject.menuGameDifficultyActive.get()!!)
@@ -250,12 +256,12 @@ class MenuViewModelTest {
     @Test
     fun onClickMenuButton_soundSettingsButtonClickedAndSoundWasOn_updatesTextAndTheMediaPlayer() {
         every { view.id } returns R.id.sound_settings_button
-        subject.soundText.set(ON)
+        subject.soundText.set(AUDIO_ON_TEXT)
 
         subject.onClickMenuButton(view)
 
         verify { theMediaPlayer.updateSoundStatus(OFF) }
-        assertEquals(OFF, subject.soundText.get())
+        assertEquals(AUDIO_OFF_TEXT, subject.soundText.get())
         assertFalse(subject.menuMainActive.get()!!)
         assertFalse(subject.menuWelcomeActive.get()!!)
         assertFalse(subject.menuGameDifficultyActive.get()!!)

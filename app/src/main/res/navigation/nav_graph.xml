@@ -11,8 +11,8 @@
         android:label="launcher_fragment"
         tools:layout="@layout/menu_fragment" />
     <fragment
-        android:id="@+id/pauseFragment"
+        android:id="@+id/fleetSetupFragment"
         android:name="com.mnafis.agameofbattleships.fleet_setup.FleetSetupFragment"
-        android:label="pause_fragment"
+        android:label="fleet_setup_fragment"
         tools:layout="@layout/fleet_setup_fragment" />
 </navigation>
