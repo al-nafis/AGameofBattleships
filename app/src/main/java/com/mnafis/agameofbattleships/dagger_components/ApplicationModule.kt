@@ -2,7 +2,7 @@ package com.mnafis.agameofbattleships.dagger_components
 
 import com.mnafis.agameofbattleships.menu.MenuFragment
 import com.mnafis.agameofbattleships.MainActivity
-import com.mnafis.agameofbattleships.pause.PauseFragment
+import com.mnafis.agameofbattleships.fleet_setup.FleetSetupFragment
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
 
@@ -15,5 +15,5 @@ abstract class ApplicationModule {
     abstract fun menuFragment(): MenuFragment
 
     @ContributesAndroidInjector
-    abstract fun pauseFragment(): PauseFragment
+    abstract fun fleetSetupFragment(): FleetSetupFragment
 }

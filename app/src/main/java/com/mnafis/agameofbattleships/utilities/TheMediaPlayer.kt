@@ -13,7 +13,7 @@ import javax.inject.Singleton
 class TheMediaPlayer @Inject constructor(
     private val sharedPrefUtil: SharedPrefUtil,
     @Named("BackgroundMusic") private val mediaPlayer: MediaPlayer,
-    @Named("AttackSound") private val soundPlayer: MediaPlayer
+    @Named("AttackSound") private val menuSelectionEffect: MediaPlayer
 ) {
 
     private var soundStatus = ON
@@ -33,10 +33,10 @@ class TheMediaPlayer @Inject constructor(
         }
     }
 
-    fun playHitMusic() {
+    fun playMenuSelectionEffect() {
         if (soundStatus == ON) {
-            soundPlayer.setVolume(0.15f, 0.15f)
-            soundPlayer.start()
+            menuSelectionEffect.setVolume(0.15f, 0.15f)
+            menuSelectionEffect.start()
         }
     }
 

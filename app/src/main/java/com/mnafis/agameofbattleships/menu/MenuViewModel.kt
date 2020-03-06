@@ -58,7 +58,7 @@ class MenuViewModel @Inject constructor(
     }
 
     private fun makeSelectionSound() {
-        theMediaPlayer.playHitMusic()
+        theMediaPlayer.playMenuSelectionEffect()
     }
 
     private fun setGameDifficultyAndBegin(gameDifficulty: String) {
