@@ -72,10 +72,10 @@ class MenuViewModelTest {
     }
 
     @Test
-    fun onClickMenuButton_playsHitSound() {
+    fun onClickMenuButton_playsMenuSelectionSound() {
         subject.onClickMenuButton(view)
 
-        verify { theMediaPlayer.playHitMusic() }
+        verify { theMediaPlayer.playMenuSelectionEffect() }
     }
 
     @Test

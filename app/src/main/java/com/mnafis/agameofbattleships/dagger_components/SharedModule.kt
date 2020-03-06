@@ -21,6 +21,6 @@ class SharedModule {
 
     @Provides
     @Named("AttackSound")
-    fun attackSoundPlayer(@Named("ApplicationContext") context: Context): MediaPlayer =
-        MediaPlayer.create(context, R.raw.shotgun)
+    fun menuSelectionSoundPlayer(@Named("ApplicationContext") context: Context): MediaPlayer =
+        MediaPlayer.create(context, R.raw.menu_selection)
 }

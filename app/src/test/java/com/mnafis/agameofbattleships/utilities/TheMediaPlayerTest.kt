@@ -51,8 +51,8 @@ class TheMediaPlayerTest {
     }
 
     @Test
-    fun playHitMusic_soundStatusTrue_setsVolumeAndStartsSound() {
-        subject.playHitMusic()
+    fun playMenuSelectionEffect_soundStatusTrue_setsVolumeAndStartsSound() {
+        subject.playMenuSelectionEffect()
 
         verify {
             soundPlayer.setVolume(0.15f, 0.15f)
@@ -61,10 +61,10 @@ class TheMediaPlayerTest {
     }
 
     @Test
-    fun playHitMusic_soundStatusFalse_DoesNothing() {
+    fun playMenuSelectionEffect_soundStatusFalse_DoesNothing() {
         subject.updateSoundStatus("Off")
 
-        subject.playHitMusic()
+        subject.playMenuSelectionEffect()
 
         verify (exactly = 0) {
             soundPlayer.setVolume(any(),any())
