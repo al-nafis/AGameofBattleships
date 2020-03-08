@@ -1,7 +1,14 @@
 package com.mnafis.agameofbattleships.utilities
 
 import android.content.SharedPreferences
+import com.mnafis.agameofbattleships.utilities.AudioStatus.OFF
+import com.mnafis.agameofbattleships.utilities.AudioStatus.ON
+import com.mnafis.agameofbattleships.utilities.GameDifficulty.EASY
+import com.mnafis.agameofbattleships.utilities.GameDifficulty.NORMAL
 import com.mnafis.agameofbattleships.utilities.SharedPrefUtil.Companion.DEFAULT_VALUE
+import com.mnafis.agameofbattleships.utilities.SharedPrefUtil.Companion.GAME_DIFFICULTY_LEVEL
+import com.mnafis.agameofbattleships.utilities.SharedPrefUtil.Companion.MUSIC_STATUS
+import com.mnafis.agameofbattleships.utilities.SharedPrefUtil.Companion.SOUND_STATUS
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
@@ -10,11 +17,6 @@ import org.junit.Before
 import org.junit.Test
 
 class SharedPrefUtilTest {
-
-    private val KEY = "key"
-    private val STRING_VALUE = "value"
-    private val BOOLEAN_VALUE = true
-    private val INT_VALUE = 1
 
     private val sharedPreferences: SharedPreferences = mockk(relaxed = true)
 
@@ -26,30 +28,44 @@ class SharedPrefUtilTest {
     }
 
     @Test
-    fun setString_addsStringValueToSharedPref() {
-        subject.setString(KEY, STRING_VALUE)
+    fun setMusicStatus_addsMusicStatusValueToSharedPref() {
+        subject.setMusicStatus(ON)
 
-        verify { sharedPreferences.edit().putString(KEY, STRING_VALUE).apply() }
+        verify { sharedPreferences.edit().putBoolean(MUSIC_STATUS, ON.value).apply() }
     }
 
     @Test
-    fun getString_returnsValue() {
-        every { sharedPreferences.getString(KEY, DEFAULT_VALUE) } returns STRING_VALUE
+    fun getMusicStatus_returnsValue() {
+        every { sharedPreferences.getBoolean(MUSIC_STATUS, OFF.value) } returns ON.value
 
-        assertEquals(STRING_VALUE, subject.getString(KEY))
+        assertEquals(ON, subject.getMusicStatus(OFF))
     }
 
     @Test
-    fun setInt_addsIntegerValueToSharedPref() {
-        subject.setInt(KEY, INT_VALUE)
+    fun setSoundStatus_addsSoundStatusValueToSharedPref() {
+        subject.setSoundStatus(ON)
 
-        verify { sharedPreferences.edit().putInt(KEY, INT_VALUE).apply() }
+        verify { sharedPreferences.edit().putBoolean(SOUND_STATUS, ON.value).apply() }
     }
 
     @Test
-    fun getInt_returnsValue() {
-        every { sharedPreferences.getInt(KEY, -1) } returns INT_VALUE
+    fun getSoundStatus_returnsValue() {
+        every { sharedPreferences.getBoolean(SOUND_STATUS, OFF.value) } returns ON.value
 
-        assertEquals(INT_VALUE, subject.getInt(KEY))
+        assertEquals(ON, subject.getSoundStatus(OFF))
+    }
+
+    @Test
+    fun setGameDifficultyLevel_addsGameDifficultyLevelValueToSharedPref() {
+        subject.setGameDifficultyLevel(EASY)
+
+        verify { sharedPreferences.edit().putString(GAME_DIFFICULTY_LEVEL, EASY.value).apply() }
+    }
+
+    @Test
+    fun getGameDifficultyLevel_returnsValue() {
+        every { sharedPreferences.getString(GAME_DIFFICULTY_LEVEL, NORMAL.value) } returns EASY.value
+
+        assertEquals(EASY, subject.getGameDifficultyLevel(NORMAL))
     }
 }

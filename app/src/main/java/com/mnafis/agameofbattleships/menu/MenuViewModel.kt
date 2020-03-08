@@ -4,14 +4,14 @@ import android.view.View
 import androidx.databinding.ObservableField
 import androidx.lifecycle.ViewModel
 import com.mnafis.agameofbattleships.R
+import com.mnafis.agameofbattleships.utilities.AudioStatus.OFF
+import com.mnafis.agameofbattleships.utilities.AudioStatus.ON
 import com.mnafis.agameofbattleships.utilities.EventBus
+import com.mnafis.agameofbattleships.utilities.GameDifficulty
+import com.mnafis.agameofbattleships.utilities.GameDifficulty.EASY
+import com.mnafis.agameofbattleships.utilities.GameDifficulty.NORMAL
 import com.mnafis.agameofbattleships.utilities.SharedPrefUtil
-import com.mnafis.agameofbattleships.utilities.SharedPrefUtil.Companion.DEFAULT_VALUE
-import com.mnafis.agameofbattleships.utilities.SharedPrefUtil.Companion.MUSIC_STATUS
-import com.mnafis.agameofbattleships.utilities.SharedPrefUtil.Companion.SOUND_STATUS
 import com.mnafis.agameofbattleships.utilities.TheMediaPlayer
-import com.mnafis.agameofbattleships.utilities.TheMediaPlayer.Companion.OFF
-import com.mnafis.agameofbattleships.utilities.TheMediaPlayer.Companion.ON
 import javax.inject.Inject
 
 class MenuViewModel @Inject constructor(
@@ -20,10 +20,13 @@ class MenuViewModel @Inject constructor(
     private val theMediaPlayer: TheMediaPlayer
 ) : ViewModel() {
 
+    private val AUDIO_ON_TEXT = "On"
+    private val AUDIO_OFF_TEXT = "Off"
+
     val backButtonText = "<-"
 
-    val musicText = ObservableField<String>(ON)
-    val soundText = ObservableField<String>(ON)
+    val musicText = ObservableField<String>(AUDIO_ON_TEXT)
+    val soundText = ObservableField<String>(AUDIO_ON_TEXT)
     val menuWelcomeActive = ObservableField<Boolean>(true)
     val menuMainActive = ObservableField<Boolean>(false)
     val menuGameDifficultyActive = ObservableField<Boolean>(false)
@@ -31,8 +34,10 @@ class MenuViewModel @Inject constructor(
     val menuCreditsActive = ObservableField<Boolean>(false)
 
     fun onResume() {
-        if (sharedPrefUtil.getString(MUSIC_STATUS) != DEFAULT_VALUE) musicText.set(sharedPrefUtil.getString(MUSIC_STATUS))
-        if (sharedPrefUtil.getString(SOUND_STATUS) != DEFAULT_VALUE) soundText.set(sharedPrefUtil.getString(SOUND_STATUS))
+        if (sharedPrefUtil.getMusicStatus().value)
+            musicText.set(AUDIO_ON_TEXT) else musicText.set(AUDIO_OFF_TEXT)
+        if (sharedPrefUtil.getSoundStatus().value)
+            soundText.set(AUDIO_ON_TEXT) else soundText.set(AUDIO_OFF_TEXT)
     }
 
     fun onClickMenuButton(view: View) {
@@ -41,8 +46,8 @@ class MenuViewModel @Inject constructor(
             R.id.play_button, R.id.game_difficulty_back_button,
             R.id.menu_options_back_button, R.id.menu_credits_back_button -> menuMainActive.set(true)
             R.id.new_game_button -> menuGameDifficultyActive.set(true)
-            R.id.game_difficulty_easy_button -> setGameDifficultyAndBegin("easy")
-            R.id.game_difficulty_Normal_button -> setGameDifficultyAndBegin("normal")
+            R.id.game_difficulty_easy_button -> setGameDifficultyAndBegin(EASY)
+            R.id.game_difficulty_Normal_button -> setGameDifficultyAndBegin(NORMAL)
             R.id.options_button -> menuOptionsActive.set(true)
             R.id.credits_button -> menuCreditsActive.set(true)
             R.id.music_settings_button -> {
@@ -61,28 +66,28 @@ class MenuViewModel @Inject constructor(
         theMediaPlayer.playMenuSelectionEffect()
     }
 
-    private fun setGameDifficultyAndBegin(gameDifficulty: String) {
+    private fun setGameDifficultyAndBegin(gameDifficulty: GameDifficulty) {
         //todo: needs to be implemented
     }
 
     private fun updateMusicStatus() {
-        if (musicText.get() == ON) {
-            musicText.set(OFF)
+        if (musicText.get() == AUDIO_ON_TEXT) {
+            musicText.set(AUDIO_OFF_TEXT)
             theMediaPlayer.updateMusicStatus(OFF)
             theMediaPlayer.stopMusic()
         } else {
-            musicText.set(ON)
+            musicText.set(AUDIO_ON_TEXT)
             theMediaPlayer.updateMusicStatus(ON)
             theMediaPlayer.playMusic()
         }
     }
 
     private fun updateSoundStatus() {
-        if (soundText.get() == ON) {
-            soundText.set(OFF)
+        if (soundText.get() == AUDIO_ON_TEXT) {
+            soundText.set(AUDIO_OFF_TEXT)
             theMediaPlayer.updateSoundStatus(OFF)
         } else {
-            soundText.set(ON)
+            soundText.set(AUDIO_ON_TEXT)
             theMediaPlayer.updateSoundStatus(ON)
         }
     }

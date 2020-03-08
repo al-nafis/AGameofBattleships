@@ -11,8 +11,8 @@ class MainViewModel @Inject constructor(
 ) : ViewModel() {
 
     fun onCreate() {
-        theMediaPlayer.updateMusicStatus(sharedPrefUtil.getString(SharedPrefUtil.MUSIC_STATUS))
-        theMediaPlayer.updateSoundStatus(sharedPrefUtil.getString(SharedPrefUtil.SOUND_STATUS))
+        theMediaPlayer.updateMusicStatus(sharedPrefUtil.getMusicStatus())
+        theMediaPlayer.updateSoundStatus(sharedPrefUtil.getSoundStatus())
     }
 
     fun onResume() {
