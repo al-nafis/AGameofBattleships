@@ -2,13 +2,15 @@ package com.mnafis.agameofbattleships.menu
 
 import android.view.View
 import com.mnafis.agameofbattleships.R
+import com.mnafis.agameofbattleships.utilities.*
 import com.mnafis.agameofbattleships.utilities.AudioStatus.OFF
 import com.mnafis.agameofbattleships.utilities.AudioStatus.ON
-import com.mnafis.agameofbattleships.utilities.EventBus
-import com.mnafis.agameofbattleships.utilities.SharedPrefUtil
-import com.mnafis.agameofbattleships.utilities.TheMediaPlayer
+import com.mnafis.agameofbattleships.utilities.FragmentSwitchEvent.Scenario.GAME_DIFFICULTY_SET
+import com.mnafis.agameofbattleships.utilities.GameDifficulty.EASY
+import com.mnafis.agameofbattleships.utilities.GameDifficulty.NORMAL
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.slot
 import io.mockk.verify
 import junit.framework.Assert.*
 import org.junit.Before
@@ -146,31 +148,43 @@ class MenuViewModelTest {
     @Test
     fun onClickMenuButton_gameDifficultyEasyButtonClicked_savesDifficultyValueInSharedPrefAndLaunchesShipPlacementScreen() {
         every { view.id } returns R.id.game_difficulty_easy_button
+        val fragmentSwitchEventSlot = slot<FragmentSwitchEvent>()
 
         subject.onClickMenuButton(view)
 
+        verify {
+            sharedPrefUtil.setGameDifficultyLevel(EASY)
+            eventBus.send(capture(fragmentSwitchEventSlot))
+        }
+
+        assertEquals(subject.javaClass, fragmentSwitchEventSlot.captured.emitter.javaClass)
+        assertEquals(GAME_DIFFICULTY_SET, fragmentSwitchEventSlot.captured.scenario)
         assertFalse(subject.menuMainActive.get()!!)
         assertFalse(subject.menuWelcomeActive.get()!!)
         assertFalse(subject.menuGameDifficultyActive.get()!!)
         assertFalse(subject.menuOptionsActive.get()!!)
         assertFalse(subject.menuCreditsActive.get()!!)
-
-        //todo: needs to be implemented
     }
 
     @Test
     fun onClickMenuButton_gameDifficultyNormalButtonClicked_savesDifficultyValueInSharedPrefAndLaunchesShipPlacementScreen() {
         every { view.id } returns R.id.game_difficulty_Normal_button
+        val fragmentSwitchEventSlot = slot<FragmentSwitchEvent>()
 
         subject.onClickMenuButton(view)
 
+        verify {
+            sharedPrefUtil.setGameDifficultyLevel(NORMAL)
+            eventBus.send(capture(fragmentSwitchEventSlot))
+        }
+
+        assertEquals(subject.javaClass, fragmentSwitchEventSlot.captured.emitter.javaClass)
+        assertEquals(GAME_DIFFICULTY_SET, fragmentSwitchEventSlot.captured.scenario)
         assertFalse(subject.menuMainActive.get()!!)
         assertFalse(subject.menuWelcomeActive.get()!!)
         assertFalse(subject.menuGameDifficultyActive.get()!!)
         assertFalse(subject.menuOptionsActive.get()!!)
         assertFalse(subject.menuCreditsActive.get()!!)
-
-        //todo: needs to be implemented
     }
 
     @Test
