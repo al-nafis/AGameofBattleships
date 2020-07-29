@@ -1,12 +1,10 @@
 package com.mnafis.agameofbattleships.menu
 
 import android.content.Context
-import androidx.lifecycle.ViewModelProviders
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
 import com.mnafis.agameofbattleships.BaseFragment
@@ -14,6 +12,8 @@ import com.mnafis.agameofbattleships.MainActivity
 import com.mnafis.agameofbattleships.R
 import com.mnafis.agameofbattleships.databinding.MenuFragmentBinding
 import com.mnafis.agameofbattleships.utilities.EventBus
+import com.mnafis.agameofbattleships.utilities.FragmentSwitchEvent
+import com.mnafis.agameofbattleships.utilities.FragmentSwitchEvent.Scenario.GAME_DIFFICULTY_SET
 import io.reactivex.disposables.CompositeDisposable
 import javax.inject.Inject
 
@@ -29,7 +29,7 @@ class MenuFragment : BaseFragment() {
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        viewModel = ViewModelProviders.of(this, viewModelFactory).get(MenuViewModel::class.java)
+        viewModel = ViewModelProvider(this, viewModelFactory).get(MenuViewModel::class.java)
     }
 
     override fun onResume() {
@@ -46,21 +46,15 @@ class MenuFragment : BaseFragment() {
         return binding.root
     }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-        viewModel = ViewModelProviders.of(this).get(MenuViewModel::class.java)
-        // TODO: Use the ViewModel
-    }
-
-    private fun navigateToPauseMenu() {
-        val textView: TextView = activity!!.findViewById(R.id.play_button)
-        textView.text = "Nice"
-        val mainActivity = activity as MainActivity
-        mainActivity.navController.navigate(R.id.pauseFragment)
+    private fun handleNavigation(fragmentSwitchEvent: FragmentSwitchEvent) {
+        if (fragmentSwitchEvent.scenario == GAME_DIFFICULTY_SET) {
+            val mainActivity = activity as MainActivity
+            mainActivity.navController.navigate(R.id.fleetSetupFragment)
+        }
     }
 
     override fun getDisposable(): CompositeDisposable = CompositeDisposable().apply {
         add(eventBus.fragmentNavigationSubject(MenuViewModel::class)
-            .subscribe({ navigateToPauseMenu() }, { it.printStackTrace() }))
+            .subscribe({ handleNavigation(it) }, { it.printStackTrace() }))
     }
 }
