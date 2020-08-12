@@ -21,6 +21,9 @@ import javax.inject.Inject
 
 class FleetSetupFragment : BaseFragment() {
 
+    val ROW_NUMBER = 10
+    val COLUMN_NUMBER = 10
+
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
 
@@ -45,10 +48,51 @@ class FleetSetupFragment : BaseFragment() {
         return binding.root
     }
 
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+        setupBoard()
+    }
+
     override fun getDisposable(): CompositeDisposable = CompositeDisposable().apply {
         add(
             eventBus.fragmentNavigationSubject(FleetSetupViewModel::class)
                 .subscribe({}, {})
         )
+    }
+
+    private fun setupBoard() {
+        val board: TableLayout = activity!!.findViewById(R.id.board_table)
+        for (r in 1..ROW_NUMBER) {
+            val row = TableRow(activity)
+            row.apply {
+                background = resources.getDrawable(R.drawable.test_background_with_border)
+            }
+            board.apply {
+                setBackgroundColor(resources.getColor(R.color.colorAccent))
+                setPadding(5, 5, 5, 5)
+            }
+            board.addView(row, TableLayout.LayoutParams(MATCH_PARENT, MATCH_PARENT, 1.0f))
+
+            for (c in 1..COLUMN_NUMBER) {
+                val cell = Cell(context!!, r, c).apply {
+                    background = resources.getDrawable(R.drawable.cell_background)
+
+//                    val params: LinearLayout.LayoutParams = LinearLayout.LayoutParams(10, 10)
+//                    params.setMargins(3, 1, 3, 1)
+//                    layoutParams = params
+                    setOnClickListener { handleCellClick(this) }
+                }
+//                row.addView(cell, TableLayout.LayoutParams(MATCH_PARENT, MATCH_PARENT, 1.0f))
+                row.addView(cell)
+            }
+        }
+    }
+
+    private fun handleCellClick(cell: Cell) {
+        Toast.makeText(
+            activity,
+            "Button Clicked: " + cell.rowNumber + " " + cell.columnNumber,
+            Toast.LENGTH_LONG
+        ).show()
     }
 }
