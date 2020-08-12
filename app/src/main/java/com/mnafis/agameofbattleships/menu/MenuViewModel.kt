@@ -4,14 +4,12 @@ import android.view.View
 import androidx.databinding.ObservableField
 import androidx.lifecycle.ViewModel
 import com.mnafis.agameofbattleships.R
+import com.mnafis.agameofbattleships.utilities.*
 import com.mnafis.agameofbattleships.utilities.AudioStatus.OFF
 import com.mnafis.agameofbattleships.utilities.AudioStatus.ON
-import com.mnafis.agameofbattleships.utilities.EventBus
-import com.mnafis.agameofbattleships.utilities.GameDifficulty
+import com.mnafis.agameofbattleships.utilities.FragmentSwitchEvent.Scenario.GAME_DIFFICULTY_SET
 import com.mnafis.agameofbattleships.utilities.GameDifficulty.EASY
 import com.mnafis.agameofbattleships.utilities.GameDifficulty.NORMAL
-import com.mnafis.agameofbattleships.utilities.SharedPrefUtil
-import com.mnafis.agameofbattleships.utilities.TheMediaPlayer
 import javax.inject.Inject
 
 class MenuViewModel @Inject constructor(
@@ -67,7 +65,8 @@ class MenuViewModel @Inject constructor(
     }
 
     private fun setGameDifficultyAndBegin(gameDifficulty: GameDifficulty) {
-        //todo: needs to be implemented
+        sharedPrefUtil.setGameDifficultyLevel(gameDifficulty)
+        eventBus.send(FragmentSwitchEvent(this, GAME_DIFFICULTY_SET))
     }
 
     private fun updateMusicStatus() {
